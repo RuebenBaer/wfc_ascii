@@ -2,23 +2,24 @@
 #include <stdlib.h>
 #include <time.h>
 
+int zeiTabLen = 16;
 int _gridsize = 5;
 
-int zeichenTabelle[] = {32, 179, 180, 191, 192, 193, 194, 195, 196, 197, 217, 218};
+int zeichenTabelle[] = {32, 32, 32, 32, 32, 179, 180, 191, 192, 193, 194, 195, 196, 197, 217, 218};
                       /*     │    ┤    ┐    └    ┴    ┬    ├    ─    ┼    ┘    ┌ */
 
                 /*   │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌ */
-int nordMit[] =  {0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1};
-int nordOhne[] = {1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0};
+int nordMit[] =  {0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1};
+int nordOhne[] = {1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0};
                 /*   │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌ */
-int ostMit[] =   {0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0};
-int ostOhne[] =  {1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1};
+int ostMit[] =   {0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0};
+int ostOhne[] =  {1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1};
                 /*   │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌ */
-int suedMit[] =  {0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0};
-int suedOhne[] = {1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1};
+int suedMit[] =  {0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0};
+int suedOhne[] = {1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1};
                 /*   │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌ */
-int westMit[] =  {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1};
-int westOhne[] = {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0};
+int westMit[] =  {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1};
+int westOhne[] = {1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0};
                 /*   │  ┤  ┐  └  ┴  ┬  ├  ─  ┼  ┘  ┌ */
 				
 struct kachel {
@@ -32,7 +33,7 @@ struct kachel {
 struct zelle {
 	int colapsed;
 	int zeichen;
-	int optionen[12];
+	int optionen[16];
 	int entropy;
 };
 
@@ -51,72 +52,76 @@ void kachelFuellen(struct kachel *k)
 {
 	switch (k->zeichen) {
 		case 0: /*   */
+		case 1:
+		case 2:
+		case 3:
+		case 4:
 			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostOhne[0];
 			k->optionSued = &suedOhne[0];
 			k->optionWest = &westOhne[0];
 			break;
-		case 1: /* │ */
+		case 5: /* │ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostOhne[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westOhne[0];
 			break;
-		case 2: /* ┤ */
+		case 6: /* ┤ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostOhne[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 3: /* ┐ */
+		case 7: /* ┐ */
 			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostOhne[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 4: /* └ */
+		case 8: /* └ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedOhne[0];
 			k->optionWest = &westOhne[0];
 			break;
-		case 5: /* ┴ */
+		case 9: /* ┴ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedOhne[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 6: /* ┬ */
+		case 10: /* ┬ */
 			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 7: /* ├ */
+		case 11: /* ├ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westOhne[0];
 			break;
-		case 8: /* ─ */
+		case 12: /* ─ */
 			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedOhne[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 9: /* ┼ */
+		case 13: /* ┼ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedMit[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 10: /* ┘ */
+		case 14: /* ┘ */
 			k->optionNord = &nordMit[0];
 			k->optionOst = &ostOhne[0];
 			k->optionSued = &suedOhne[0];
 			k->optionWest = &westMit[0];
 			break;
-		case 11: /* ┌ */
+		case 15: /* ┌ */
 			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostMit[0];
 			k->optionSued = &suedMit[0];
@@ -136,17 +141,17 @@ int main(int argc, char** argv)
 	}
 	
 	printf("%c", zeichenTabelle[0]);
-	for (int i = 1; i < 12; i++) {
+	for (int i = 1; i < zeiTabLen; i++) {
 		printf(" %c", zeichenTabelle[i]);
 	}
 	printf("\n\n");
-	struct kachel k[12];
-	for (int i = 0; i < 12; i++) {
+	struct kachel k[16];
+	for (int i = 0; i < zeiTabLen; i++) {
 		k[i].zeichen = i;
 		kachelFuellen(&k[i]);
 	}
 	
-	struct zelle gitter[_gridsize * _gridsize];
+	struct zelle *gitter = malloc (_gridsize * _gridsize * sizeof(struct zelle));
 	for (int i = 0; i < _gridsize * _gridsize; i++) {
 		initZelle(&gitter[i]);
 	}
@@ -155,7 +160,7 @@ int main(int argc, char** argv)
 	srand(time(NULL));
 	int r_r = rand() % (_gridsize);
 	int r_s = rand() % (_gridsize);
-	int r_val = rand() % 12;
+	int r_val = rand() % zeiTabLen;
 	
 	gitterFuellen(&gitter[r_s + r_r * _gridsize], r_val);
 	nachbarnReduzieren(gitter, r_r, r_s, k);
@@ -171,7 +176,7 @@ int main(int argc, char** argv)
 		int gewOpt = rand() % gitter[aktOrt.s + aktOrt.r * _gridsize].entropy;
 		
 		int i, ka = -1;
-		for (i = 0; i < 12; i++) {
+		for (i = 0; i < zeiTabLen; i++) {
 			if (gitter[aktOrt.s + aktOrt.r * _gridsize].optionen[i]) {
 				ka++;
 			}
@@ -183,6 +188,8 @@ int main(int argc, char** argv)
 		/* drawGitter(gitter); */
 	}
 	drawGitter(gitter);
+	
+	free(gitter);
 	
 	
 	/* for (int i = 0; i < 12; i++) {
@@ -217,7 +224,7 @@ void gitterFuellen(struct zelle *z, int i)
 {
 	z->colapsed = 1;
 	z->zeichen = i;
-	z->entropy = 13;
+	z->entropy = zeiTabLen + 1;
 	return;
 }
 
@@ -227,7 +234,7 @@ void drawGitter(struct zelle gitter[])
 	for (int re = 0; re < _gridsize; re++) {
 		for (int sp = 0; sp < _gridsize; sp++) {
 			if (gitter[re * _gridsize + sp].colapsed == 1) {
-				if ((c = gitter[re * _gridsize + sp].zeichen) < 0 || c > 11)
+				if ((c = gitter[re * _gridsize + sp].zeichen) < 0 || c > zeiTabLen - 1)
 					printf("*");
 				else
 				printf("%c", zeichenTabelle[gitter[re * _gridsize + sp].zeichen]);
@@ -244,22 +251,22 @@ void initZelle(struct zelle *z)
 {
 	z->colapsed = 0;
 	z->zeichen = -1;
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < zeiTabLen; i++)
 		z->optionen[i] = 1;
-	z->entropy = 12;
+	z->entropy = zeiTabLen;
 }
 
 void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kachel k[])
 {
 	int aktZ = gitter[spalte + reihe * _gridsize].zeichen;
 	int aktOrt;
-	if(!(aktZ >= 0 && aktZ < 12))
+	if(!(aktZ >= 0 && aktZ < zeiTabLen))
 		return;
 	if (!((reihe - 1) < 0)) {
 		aktOrt = (reihe - 1) * _gridsize + spalte;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < zeiTabLen; i++) {
 				gitter[aktOrt].optionen[i] *= k[aktZ].optionNord[i];
 				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
@@ -269,7 +276,7 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 		aktOrt = (reihe + 1) * _gridsize + spalte;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < zeiTabLen; i++) {
 				gitter[aktOrt].optionen[i] *= k[aktZ].optionSued[i];
 				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
@@ -279,7 +286,7 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 		aktOrt = reihe * _gridsize + spalte - 1;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < zeiTabLen; i++) {
 				gitter[aktOrt].optionen[i] *= k[aktZ].optionWest[i];
 				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
@@ -289,7 +296,7 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 		aktOrt = reihe * _gridsize + spalte + 1;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < 12; i++) {
+			for (int i = 0; i < zeiTabLen; i++) {
 				gitter[aktOrt].optionen[i] *= k[aktZ].optionOst[i];
 				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
@@ -303,7 +310,7 @@ koor niedrigsteEntropy(struct zelle gitter[])
 	koor ort;
 	ort.s = -1;
 	ort.r = -1;
-	int minEntropy = 13;
+	int minEntropy = zeiTabLen + 1;
 	for (int reihe = 0; reihe < _gridsize; reihe++) {
 		for (int spalte = 0; spalte < _gridsize; spalte++) {
 			if (gitter[spalte + reihe * _gridsize].colapsed == 0) {
