@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int _gridsize = 10;
+int _gridsize = 5;
 
 int zeichenTabelle[] = {32, 179, 180, 191, 192, 193, 194, 195, 196, 197, 217, 218};
                       /*     │    ┤    ┐    └    ┴    ┬    ├    ─    ┼    ┘    ┌ */
@@ -87,9 +87,9 @@ void kachelFuellen(struct kachel *k)
 			k->optionWest = &westMit[0];
 			break;
 		case 6: /* ┬ */
-			k->optionNord = &nordMit[0];
+			k->optionNord = &nordOhne[0];
 			k->optionOst = &ostMit[0];
-			k->optionSued = &suedOhne[0];
+			k->optionSued = &suedMit[0];
 			k->optionWest = &westMit[0];
 			break;
 		case 7: /* ├ */
@@ -127,8 +127,14 @@ void kachelFuellen(struct kachel *k)
 	}
 }
 
-int main()
+int main(int argc, char** argv)
 {
+	if (argc > 1) {
+		int temp = atoi(argv[1]);
+		if (temp > 0)
+			_gridsize = temp;
+	}
+	
 	printf("%c", zeichenTabelle[0]);
 	for (int i = 1; i < 12; i++) {
 		printf(" %c", zeichenTabelle[i]);
@@ -246,41 +252,46 @@ void initZelle(struct zelle *z)
 void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kachel k[])
 {
 	int aktZ = gitter[spalte + reihe * _gridsize].zeichen;
+	int aktOrt;
 	if(!(aktZ >= 0 && aktZ < 12))
 		return;
 	if (!((reihe - 1) < 0)) {
-		if (!gitter[(reihe - 1) * _gridsize + spalte].colapsed) {
-			gitter[(reihe - 1) * _gridsize + spalte].entropy = 0;
+		aktOrt = (reihe - 1) * _gridsize + spalte;
+		if (!gitter[aktOrt].colapsed) {
+			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < 12; i++) {
-				gitter[(reihe - 1) * _gridsize + spalte].optionen[i] *= k[aktZ].optionNord[i];
-				gitter[(reihe - 1) * _gridsize + spalte].entropy += gitter[(reihe - 1) * _gridsize + spalte].optionen[i];
+				gitter[aktOrt].optionen[i] *= k[aktZ].optionNord[i];
+				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
 		}
 	}
 	if (!((reihe + 1) >= _gridsize)) {
-		if (!gitter[(reihe + 1) * _gridsize + spalte].colapsed) {
-			gitter[(reihe + 1) * _gridsize + spalte].entropy = 0;
+		aktOrt = (reihe + 1) * _gridsize + spalte;
+		if (!gitter[aktOrt].colapsed) {
+			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < 12; i++) {
-				gitter[(reihe + 1) * _gridsize + spalte].optionen[i] *= k[aktZ].optionSued[i];
-				gitter[(reihe + 1) * _gridsize + spalte].entropy += gitter[(reihe + 1) * _gridsize + spalte].optionen[i];
+				gitter[aktOrt].optionen[i] *= k[aktZ].optionSued[i];
+				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
 		}
 	}
 	if (!((spalte - 1) < 0)) {
-		if (!gitter[reihe * _gridsize + spalte - 1].colapsed) {
-			gitter[reihe * _gridsize + spalte - 1].entropy = 0;
+		aktOrt = reihe * _gridsize + spalte - 1;
+		if (!gitter[aktOrt].colapsed) {
+			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < 12; i++) {
-				gitter[reihe * _gridsize + spalte - 1].optionen[i] *= k[aktZ].optionWest[i];
-				gitter[reihe * _gridsize + spalte - 1].entropy += gitter[reihe * _gridsize + spalte - 1].optionen[i];
+				gitter[aktOrt].optionen[i] *= k[aktZ].optionWest[i];
+				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
 		}
 	}
 	if (!((spalte + 1) >= _gridsize)) {
-		if (!gitter[reihe * _gridsize + spalte + 1].colapsed) {
-			gitter[reihe * _gridsize + spalte + 1].entropy = 0;
+		aktOrt = reihe * _gridsize + spalte + 1;
+		if (!gitter[aktOrt].colapsed) {
+			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < 12; i++) {
-				gitter[reihe * _gridsize + spalte + 1].optionen[i] *= k[aktZ].optionOst[i];
-				gitter[reihe * _gridsize + spalte + 1].entropy += gitter[reihe * _gridsize + spalte + 1].optionen[i];
+				gitter[aktOrt].optionen[i] *= k[aktZ].optionOst[i];
+				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 			}
 		}
 	}
