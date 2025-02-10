@@ -262,8 +262,8 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 	int aktOrt;
 	if(!(aktZ >= 0 && aktZ < zeiTabLen))
 		return;
-	if (!((reihe - 1) < 0)) {
-		aktOrt = (reihe - 1) * _gridsize + spalte;
+	/* if (!((reihe - 1) < 0)) */ {
+		aktOrt = ((reihe - 1) % zeiTabLen) * _gridsize + spalte;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < zeiTabLen; i++) {
@@ -272,8 +272,8 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 			}
 		}
 	}
-	if (!((reihe + 1) >= _gridsize)) {
-		aktOrt = (reihe + 1) * _gridsize + spalte;
+	/* if (!((reihe + 1) >= _gridsize)) */ {
+		aktOrt = ((reihe + 1) % zeiTabLen) * _gridsize + spalte;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < zeiTabLen; i++) {
@@ -282,8 +282,8 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 			}
 		}
 	}
-	if (!((spalte - 1) < 0)) {
-		aktOrt = reihe * _gridsize + spalte - 1;
+	/* if (!((spalte - 1) < 0)) */ {
+		aktOrt = (reihe % zeiTabLen) * _gridsize + spalte - 1;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < zeiTabLen; i++) {
@@ -292,8 +292,8 @@ void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kac
 			}
 		}
 	}
-	if (!((spalte + 1) >= _gridsize)) {
-		aktOrt = reihe * _gridsize + spalte + 1;
+	/* if (!((spalte + 1) >= _gridsize)) */ {
+		aktOrt = (reihe % zeiTabLen) * _gridsize + spalte + 1;
 		if (!gitter[aktOrt].colapsed) {
 			gitter[aktOrt].entropy = 0;
 			for (int i = 0; i < zeiTabLen; i++) {
