@@ -173,7 +173,11 @@ int main(int argc, char** argv)
 		if (aktOrt.s == -1) break;
 		if (gitter[aktOrt.s + aktOrt.r * _gridsize].colapsed)
 			printf("Ins Leere gelaufen!\n");
-		int gewOpt = rand() % gitter[aktOrt.s + aktOrt.r * _gridsize].entropy;
+		int gewOpt;
+		if (gitter[aktOrt.s + aktOrt.r * _gridsize].entropy != 0)
+			gewOpt = rand() % gitter[aktOrt.s + aktOrt.r * _gridsize].entropy;
+		else
+			printf("Entropy bei %d | %d ist Null\n", aktOrt.s, aktOrt.r);
 		
 		int i, ka = -1;
 		for (i = 0; i < zeiTabLen; i++) {
@@ -190,33 +194,6 @@ int main(int argc, char** argv)
 	drawGitter(gitter);
 	
 	free(gitter);
-	
-	
-	/* for (int i = 0; i < 12; i++) {
-		printf("Zeichen %c\n", zeichenTabelle[k[i].zeichen]);
-		printf("Nord:\n");
-		for (int j = 0; j< 12; j++) {
-			if (k[i].optionNord[j] == 1)
-				printf(" %c", zeichenTabelle[j]);
-		}
-		printf("\nOst:\n");
-		for (int j = 0; j< 12; j++) {
-			if (k[i].optionOst[j] == 1)
-				printf(" %c", zeichenTabelle[j]);
-		}
-		printf("\nSued:\n");
-		for (int j = 0; j< 12; j++) {
-			if (k[i].optionSued[j] == 1)
-				printf(" %c", zeichenTabelle[j]);
-		}
-		printf("\nWest:\n");
-		for (int j = 0; j< 12; j++) {
-			if (k[i].optionWest[j] == 1)
-				printf(" %c", zeichenTabelle[j]);
-		}
-		printf("\n\n");
-	} */
-
 	return 0;
 }
 
@@ -259,47 +236,53 @@ void initZelle(struct zelle *z)
 void nachbarnReduzieren(struct zelle gitter[], int reihe, int spalte, struct kachel k[])
 {
 	int aktZ = gitter[spalte + reihe * _gridsize].zeichen;
+	int aktR, aktS;
 	int aktOrt;
 	if(!(aktZ >= 0 && aktZ < zeiTabLen))
 		return;
-	/* if (!((reihe - 1) < 0)) */ {
-		aktOrt = ((reihe - 1) % zeiTabLen) * _gridsize + spalte;
-		if (!gitter[aktOrt].colapsed) {
-			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < zeiTabLen; i++) {
-				gitter[aktOrt].optionen[i] *= k[aktZ].optionNord[i];
-				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
-			}
+	if ((aktR = (reihe - 1)) < 0) {
+		aktR += _gridsize;
+	}
+	aktOrt = aktR * _gridsize + spalte;
+	if (!gitter[aktOrt].colapsed) {
+		gitter[aktOrt].entropy = 0;
+		for (int i = 0; i < zeiTabLen; i++) {
+			gitter[aktOrt].optionen[i] *= k[aktZ].optionNord[i];
+			gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 		}
 	}
-	/* if (!((reihe + 1) >= _gridsize)) */ {
-		aktOrt = ((reihe + 1) % zeiTabLen) * _gridsize + spalte;
-		if (!gitter[aktOrt].colapsed) {
-			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < zeiTabLen; i++) {
-				gitter[aktOrt].optionen[i] *= k[aktZ].optionSued[i];
-				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
-			}
+
+	if ((aktR = (reihe + 1)) >= _gridsize) {
+		aktR -= _gridsize;
+	}
+	aktOrt = aktR * _gridsize + spalte;
+	if (!gitter[aktOrt].colapsed) {
+		gitter[aktOrt].entropy = 0;
+		for (int i = 0; i < zeiTabLen; i++) {
+			gitter[aktOrt].optionen[i] *= k[aktZ].optionSued[i];
+			gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 		}
 	}
-	/* if (!((spalte - 1) < 0)) */ {
-		aktOrt = (reihe % zeiTabLen) * _gridsize + spalte - 1;
-		if (!gitter[aktOrt].colapsed) {
-			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < zeiTabLen; i++) {
-				gitter[aktOrt].optionen[i] *= k[aktZ].optionWest[i];
-				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
-			}
+	if ((aktS = (spalte - 1)) < 0) {
+		aktS += _gridsize;
+	}
+	aktOrt = reihe * _gridsize + aktS;
+	if (!gitter[aktOrt].colapsed) {
+		gitter[aktOrt].entropy = 0;
+		for (int i = 0; i < zeiTabLen; i++) {
+			gitter[aktOrt].optionen[i] *= k[aktZ].optionWest[i];
+			gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 		}
 	}
-	/* if (!((spalte + 1) >= _gridsize)) */ {
-		aktOrt = (reihe % zeiTabLen) * _gridsize + spalte + 1;
-		if (!gitter[aktOrt].colapsed) {
-			gitter[aktOrt].entropy = 0;
-			for (int i = 0; i < zeiTabLen; i++) {
-				gitter[aktOrt].optionen[i] *= k[aktZ].optionOst[i];
-				gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
-			}
+	if ((aktS = (spalte + 1)) >= _gridsize) {
+		aktS -= _gridsize;
+	}
+	aktOrt = reihe * _gridsize + aktS;
+	if (!gitter[aktOrt].colapsed) {
+		gitter[aktOrt].entropy = 0;
+		for (int i = 0; i < zeiTabLen; i++) {
+			gitter[aktOrt].optionen[i] *= k[aktZ].optionOst[i];
+			gitter[aktOrt].entropy += gitter[aktOrt].optionen[i];
 		}
 	}
 	return;
